@@ -1,0 +1,124 @@
+Maven: 
+==============================
+
+Maven is a powerful project management tool that is based on POM (project object model). It is used for projects build, dependency and documentation. 
+
+In short terms we can tell maven is a tool that can be used for building and managing any Java-based project. maven make the day-to-day work of Java developers easier and generally help with the comprehension of any Java-based project.
+
+Maven does a lot of helpful task like
+-------------------------------------
+
+1. We can easily build a project using maven.
+2. We can add jars and other dependencies of the project easily using the help of maven.
+3. Maven provides project information (log document, dependency list, unit test reports , documentation etc.)
+4. Maven is very helpful for a project while updating central repository of JARs and other dependencies.
+5. With the help of Maven we can build any number of projects into output types like the JAR(Java Archive), WAR(Web Archive) etc without doing any scripting.
+6. Using maven we can easily integrate our project with source control system (such as Subversion or Git).
+
+How maven Works:
+==================
+maven-archetype-quickstart--> for java based project(JAR)
+maven-archetype-webapp --> For Web based projects(WAR)
+
+
+1. maven Reads the pom.xml file
+2. Then downloads the dependencies defined in pom.xml into local repository from central or Remote Repository
+3. Execute life Cycles, phases, goals,plug-ins etc ,defines in specifies build path
+
+Maven Configuration
+
+1. POM File: Project Object Model(POM) Files are XML file that contains information related to the project and configuration information such as dependencies, source directory, plugin, goals etc. used by Maven to build the project. When you should execute a maven command you give maven a POM file to execute the commands. Maven reads pom.xml file to accomplish its configuration and operations.
+
+2. Dependencies and Repositories: Dependencies are external Java libraries required for Project and repositories are directories of packaged JAR files. The local repository is just a directory on your machine hard drive. If the dependencies are not found in the local Maven repository, Maven downloads them from a central Maven repository and puts them in your local repository.
+
+3. Build Life Cycles, Phases and Goals: A build life cycle consists of a sequence of build phases, and each build phase consists of a sequence of goals. Maven command is the name of a build lifecycle, phase or goal. If a lifecycle is requested executed by giving maven command, all build phases in that life cycle are executed also. If a build phase is requested executed, all build phases before it in the defined sequence are executed too.
+
+
+4. Build Profiles: Build profiles a set of configuration values which allows you to build your project using different configurations. For example, you may need to build your project for your local computer, for development and test. To enable different builds you can add different build profiles to your POM files using its profiles elements and are triggered in the variety of ways.
+
+5. Build Plugins: Build plugins are used to perform specific goal. you can add a plugin to the POM file. Maven has some standard plugins you can use, and you can also implement your own in Java.
+
+Installation Process:
+=======================
+
+
+1. Verify that your system has java installed or not. if not then install java 
+
+2. Check java Environmental variable is set or not(PATH, JAVA_HOME). if not then set java environmental variable
+3. Download maven
+4. Unpack your maven zip at any place in your system.
+5. Add the bin directory of the created directory apache-maven-3.5.3( to the PATH environment variable and system variable.
+6. open cmd and run mvn -v command. If it print following lines of code then Then installation completed.
+
+Maven pom.xml:
+=============
+
+POM means Project Object Model is key to operate Maven. Maven reads pom.xml file to accomplish its configuration and operations. It is an XML file that contains information related to the project and configuration information such as dependencies, source directory, plugin, goals etc. used by Maven to build the project.
+
+Elements used for Creating pom.xml file
+-------------------------------------------
+
+project- It is the root element of the pom.xml file.
+
+modelVersion- modelversion means what version of the POM model you are using. Use version 4.0.0 for maven 2 and maven 3.
+
+groupId- groupId means the id for the project group. It is unique and Most often you will use a group ID which is similar to the root Java package name of the project like we used the groupId com.project.loggerapi.
+
+artifactId- artifactId used to give name of the project you are building.in our example name of our project is LoggerApi.
+
+version- version element contains the version number of the project. If your project has been released in different versions then it is useful to give version of your project.
+
+Other Elements of Pom.xml file
+----------------------------------
+
+dependencies- dependencies element is used to defines a list of dependency of project.
+
+dependency- dependency defines a dependency and used inside dependencies tag. Each dependency is described by its groupId, artifactId and version.
+
+name- this element is used to give name to our maven project.
+
+scope- this element used to define scope for this maven project that can be compile, runtime, test, provided system etc.
+
+packaging- packaging element is used to packaging our project to output types like JAR, WAR etc.
+
+
+Local repository- A local repository is a directory on the machine of developer. This repository contains all the dependencies Maven downloads. Maven only needs to download the dependencies once, even if multiple projects depends on them (e.g. ODBC).
+By default, maven local repository is user_home/m2 directory.
+example – C:\Users\administrator\.m2
+
+Central repository- The central Maven repository is created by Maven community. Maven looks in this central repository for any dependencies needed but not found in your local repository. Maven then downloads these dependencies into your local repository. You can view central repository by this link  https://repo1.maven.org/maven2/.
+ --It is maintained my Maven community
+ --It is not required to be configured
+ --It requires Internet access to be searched
+
+Remote repository- remote repository is a repository on a web server from which Maven can download dependencies.it often used for hosting projects internal to organization. Maven then downloads these dependencies into your local repository.
+
+
+
+Maven comes with 3 built-in build life cycles as shown below :
+-----------------------------------------------------------------
+
+Clean - this phase involves cleaning of the project (for a fresh build & deployment)
+Default - this phase handles the complete deployment of the project
+Site - this phase handles the generating the java documentation of the project.
+
+
+maven Build Phases:
+--------------------
+validate - validate the project is correct and all necessary information is available
+compile - compile the source code of the project
+test - test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+package - take the compiled code and package it in its distributable format, such as a JAR.
+integration-test(e2e) - process and deploy the package if necessary into an environment where integration tests can be run
+verify - run any checks to verify the package is valid and meets quality criteria
+install - install the package into the local repository, for use as a dependency in other projects locally
+deploy - done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects.
+
+
+To create a Maven project using console:
+
+mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+
+then Go to the Project Folder and run --> mvn package to run the Application
+
+mvn archetype:generate -DgroupId=com.cts.training -DartifactId=maven-project-with-cmd -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
