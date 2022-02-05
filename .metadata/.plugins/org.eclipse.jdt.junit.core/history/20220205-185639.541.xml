@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="mavendemo2 (1)" project="mavendemo2" tests="1" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="com.pack1.AppTest" time="0.003">
-    <testcase name="shouldAnswerWithTrue" classname="com.pack1.AppTest" time="0.003"/>
-  </testsuite>
-</testrun>
