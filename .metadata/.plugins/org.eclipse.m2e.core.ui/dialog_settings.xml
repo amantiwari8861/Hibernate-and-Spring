@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectWizardLocationPage">
 		<list key="location">
+			<item value="F:\Spring\hibernate\programs\mavendemo2"/>
 			<item value="F:\Spring\hibernate\programs"/>
 			<item value="F:\Spring\hibernate\programs\MavenDemo\pom.xml"/>
 		</list>
@@ -27,14 +28,13 @@
 	</section>
 	<section name="Maven2ProjectWizardArchifactPage">
 		<list key="package">
-			<item value="com.pack1"/>
+			<item value="com.training.niit"/>
 		</list>
 		<list key="groupId">
-			<item value="com.pack1"/>
+			<item value="com.training.niit"/>
 		</list>
 		<list key="artifactId">
-			<item value="mavendemo2"/>
-			<item value="MavenDemo2"/>
+			<item value="Hibernate5Demo"/>
 		</list>
 		<list key="projectNameTemplate">
 			<item value="[artifactId]"/>

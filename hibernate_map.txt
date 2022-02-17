@@ -1,0 +1,116 @@
+Persisting Map
+--------------
+
+Map is used when we want to persist a collection of key/value pairs where the key is always unique. Some common implementations of java.util.Map are java.util.HashMap, java.util.LinkedHashMap, and so on. For this recipe, we will use java.util.HashMap.
+
+Now, let's assume that we have a scenario where we are going to implement Map<String, String>; here, the String key is the e-mail address label, and the value String is the e-mail address. For example, we will try to construct a data structure similar to <"Personal e-mail", "emailaddress2@provider2.com">, <"Business e-mail", "emailaddress1@provider1.com">. This means that we will create an alias of the actual e-mail address so that we can easily get the e-mail address using the alias and can document it in a more readable form. This type of implementation depends on the custom requirement; here, we can easily get a business e-mail using the Business email key.
+
+Tables:
+
+CREATE TABLE `email` (
+  `Employee_id` BIGINT(20) NOT NULL,
+  `emails` VARCHAR(255) DEFAULT NULL,
+  `emails_KEY` VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`Employee_id`,`emails_KEY`),
+  KEY `FK5C24B9C38F47B40` (`Employee_id`),
+  CONSTRAINT `FK5C24B9C38F47B40` FOREIGN KEY (`Employee_id`) REFERENCES `employee` (`id`)
+);
+
+
+CREATE TABLE `employee` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+Employee.java
+-------------
+
+@Entity
+@Table(name = "employee")
+public class Employee {
+
+  @Id
+  @GeneratedValue
+  @Column(name = "id")
+  private long id;
+
+  @Column(name = "name")
+  private String name;
+
+  @ElementCollection
+  @CollectionTable(name = "email")
+  private Map<String, String> emails;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Map<String, String> getEmails() {
+    return emails;
+  }
+
+  public void setEmails(Map<String, String> emails) {
+    this.emails = emails;
+  }
+
+  @Override
+  public String toString() {
+    return "Employee" 
+        + "\n\tId: " + this.id
+        + "\n\tName: " + this.name
+        + "\n\tEmails: " + this.emails;
+  }
+}
+
+
+Here, we will consider how to work with Map and its manipulation operations, such as inserting, retrieving, deleting, and updating.
+
+Main Class:
+
+Configuration cfg = new Configuration().configure();
+		
+			SessionFactory sessionFactory = cfg.buildSessionFactory();
+			Session session = sessionFactory.openSession();
+			Transaction transaction = session.beginTransaction();
+		
+		  Employee employee = new Employee();
+		  employee.setName("yogesh");
+		    
+		  Map<String, String> emails = new HashMap<String, String>();
+		  emails.put("Business email", "emailaddress1@provider1.com");
+		  emails.put("Personal email", "emailaddress2@provider2.com");
+		  employee.setEmails(emails);
+
+		  session.save(employee);
+		  transaction.commit();
+		  session.close();
+		  
+		  
+
+For Array:
+------------------------------
+
+  @ElementCollection
+  @IndexColumn(name="email_index")
+  @CollectionTable(name = "email")
+  private String[] emails;
+  
+  
+  
+ Employee employee = new Employee();
+employee.setName("Pankaj");
+employee.setEmails (new String []{"emailaddress1@provider1.com", "emailaddress2@provider2.com", "emailaddress3@provider3.com", "emailaddress4@provider4.com"});
+

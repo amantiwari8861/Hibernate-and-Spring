@@ -1,0 +1,158 @@
+For hbm2ddl.auto property the list of possible options is:
+==========================================================
+
+validate: validate that the schema matches, make no changes to the schema of the database, you probably want this for production.
+update: update the schema to reflect the entities being persisted
+create: creates the schema necessary for your entities, destroying any previous data.
+create-drop: create the schema as in create above, but also drop the schema at the end of the session. This is great in early development or for testing.
+
+Working with the table per class hierarchy strategy of inheritance
+------------------------------------------------------------------
+
+   Java is an object-oriented programming language, and while working with the object-oriented paradigm, one thing comes to our mind: inheritance. We form a real-world scenario using IS A and HAS A relationships. Inheritance is supported by many languages, but relational databases are unable to understand the relationship of inheritance. Hibernate provides a way to map real-time relationships to the database.
+   
+   Hibernate provides multiple strategies to achieve such a relationship for relational databases. There are three inheritance mapping strategies defined in hibernate:
+   
+   1. Table per class hierarchy
+   2. Table per subclass
+   3. Table per concrete class
+   
+1.Table per class hierarchy
+===========================
+   
+    Here, we will create a new data structure that will help you understand the inheritance strategy.
+
+	Consider a class, Employee. We will extend the Employee class into two subclasses—PermanentEmployee and ContractualEmployee
+	
+	Employee
+	    ---id, name
+	   |----- PermanentEmployee
+					|---salary
+	   
+	   |-----ContractualEmployee
+					|---hourlyRate
+					|---contractPeriod
+
+					
+Employee.java
+--------------
+
+@Entity
+@Table(name="employee")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+    name="emp_type" , discriminatorType=DiscriminatorType.STRING , length=2
+    )
+@DiscriminatorValue(value="E")
+public class Employee {
+  
+    @Id
+    @GeneratedValue
+    @Column(name="id")
+    private long id;
+    
+    @Column(name="name")
+    private String name;
+    
+    //getters and setters
+}
+
+PermanentEmployee.java
+-----------------------
+
+@Entity
+@Table(name = "employee")
+@DiscriminatorValue(value="PE")
+public class PermanentEmployee extends Employee {
+  
+    @Column(name="salary")
+    private Double salary;
+    
+    //getters and setters
+}
+
+
+ContractualEmployee.java
+------------------------
+
+@Entity
+@Table(name = "employee")
+@DiscriminatorValue(value="CE")
+public class ContractualEmployee extends Employee {
+    
+    @Column(name="hourly_rate")
+    private Double HourlyRate;
+    
+    @Column(name="contract_period")
+    private Float ContractPeriod;
+    
+    //getters and setters
+}
+
+Now, hibernate will create a table with the fields of Employee, ContractualEmployee, PermanentEmployee, and one more column defined in the name attribute of the @DiscriminatorColumn annotation.
+
+Here, the Employee class is the topmost in the hierarchy, and we used some annotation on the Employee class. Let's take a look at the annotations used in all three classes.
+
+Annotations used in Employee.java
+Following are the annotations used in Employee.java:
+
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE): This annotation is used to define the inheritance strategy. It is used only on the root class in the hierarchy.
+
+@DiscriminatorColumn(name="emp_type", discriminatorType=DiscriminatorType.STRING, length=2): This annotation is used to define the discriminator column for the SINGLE_TABLE and JOINED mapping strategies. The attributes are as follows:
+
+name="emp_type": hibernate creates a column with the value provided for the name attribute
+
+discriminatorType=DiscriminatorType.STRING: This is used to define the datatype of the discriminator column
+
+length=2: This is used to define the field size of the discriminator column
+
+@DiscriminatorValue(value="E"): This annotation defines the value of the discriminator column for this particular class. If the value is not provided, hibernate uses a class name in DiscriminatorType.STRING, and the provided specific functions will be used otherwise.
+
+Annotations used in ContractualEmployee.java
+
+Following are the annotations used in ContractualEmployee.java:
+
+@DiscriminatorValue(value="CE"): The value "CE" is used for this particular class
+
+Annotations used in PermanentEmployee.java
+Following are the annotations used in PermanentEmployee.java:
+
+@DiscriminatorValue(value="PE"): The value "PE" is used for this particular class
+
+
+
+How it works…
+=============
+
+
+Here, we defined the Employee class as the parent class, and the ContractualEmployee and PermanentEmployee classes are defined as the subclasses of the Employee class.
+
+When we save a record in the parent class, hibernate saves the values in the fields of that particular class and the other columns from the subclasses are saved with a null value.
+
+If we save the record in the ContractualEmployee and PermanentEmployee subclasses, hibernate saves the values in the fields of the current and parent class.
+
+We can use the value of the emp_type column, which is E (Employee), PE is for PermanentEmployee and CE for ContractualEmployee to determine records.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

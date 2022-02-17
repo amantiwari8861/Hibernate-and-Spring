@@ -1,0 +1,131 @@
+Working with the table per subclass strategy of inheritance
+------------------------------------------------------------
+
+	we went through the table per class hierarchy inheritance strategy. Table per class hierarchy stores all the rows in a single table and the discriminator column is used to uniquely identify the records. Sometimes, the tables become very large if the hierarchy is deep. In such a case, we can use another strategy called table per subclass.
+	
+	In the table-per-subclass strategy, hibernate creates separate tables for each class. The relationship exists between the parent and child tables, where the common data is stored in the parent class and the data of the subclass is stored in a separate specific table.
+
+	Employee
+	     ---id
+		 ---name
+	   |----- PermanentEmployee
+					---emp_id
+					---salary
+	   
+	   |-----ContractualEmployee
+					---emp_id
+					---hourlyRate
+					---contractPeriod
+					
+Employee.java
+--------------
+
+@Entity
+@Table(name="employee")
+@Inheritance(strategy=InheritanceType.JOINED)
+public class Employee {
+  
+  @Id
+  @GeneratedValue
+  @Column(name="id")
+  private long id;
+  
+  @Column(name="name")
+  private String name;
+  
+  // getters and setters  
+}
+
+ContractualEmployee.java
+--------------------------
+
+@Entity
+@Table
+@PrimaryKeyJoinColumn(name="emp_id")
+public class ContractualEmployee extends Employee {
+  
+  @Column(name="hourly_rate")
+  private Double HourlyRate;
+  
+  @Column(name="contract_period")
+  private Float ContractPeriod;
+  
+  // getters and setters  
+
+}
+
+PermanentEmployee.java
+----------------------
+
+@Entity
+@Table
+@PrimaryKeyJoinColumn(name="emp_id")
+public class PermanentEmployee extends Employee {
+  
+  @Column(name="salary")
+  private Double salary;
+  
+  // getters and setters
+
+}
+
+
+Tables:
+--------
+CREATE TABLE `employee` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `contractualemployee` (
+  `contract_period` float DEFAULT NULL,
+  `hourly_rate` double DEFAULT NULL,
+  `emp_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`emp_id`),
+  KEY `FK_EMPLOYEE_ID` (`emp_id`),
+  CONSTRAINT `FK_EMPLOYEE_ID` 
+    FOREIGN KEY (`emp_id`) 
+    REFERENCES `employee` (`id`)
+);
+
+
+CREATE TABLE `permanentemployee` (
+  `salary` double DEFAULT NULL,
+  `emp_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`emp_id`),
+  KEY `FK_EMPLOYEE_ID` (`emp_id`),
+  CONSTRAINT `_EMPLOYEE_ID` 
+    FOREIGN KEY (`emp_id`) 
+    REFERENCES `employee` (`id`)
+);
+
+
+In this strategy, we used the @Inheritance annotation with strategy=InheritanceType.JOINED in the Employee parent class only. For the subclasses, we used @PrimaryKeyJoinColumn(name="emp_id"). Hibernate will create a foreign key column in all the subtables with the value of the name attribute of the @PrimaryKeyJoinColumn annotation.
+
+
+
+How it works…
+--------------
+Upon careful observation of the data from the three tables and its output, you can understand how this strategy works. In this strategy, the common data is stored in the parent table, which is Employee here. The subtable stores the class-specific and common data in the parent table. Also, the subclasses refer to the parent class primary key as a foreign key.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

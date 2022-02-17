@@ -1,0 +1,213 @@
+Hibernate allows us to map the Java collections object with data structures. Here, we will look at how to deal with Java collections using Hibernate. Java collections commonly include List, Map, Set, and Array. All standard Java collections are supported by hibernate.
+
+Persisting List
+--------------
+	List is an interface provided by Java and accessed from java.util.List that has the capability to store a sequence of elements, allow duplicate elements, and contain elements of the same type. Some classes that implement the List interface are java.util.ArrayList, java.util.LinkedList, and so on. Now, let's look at how to use List while using hibernate.
+	
+	Here, we consider a new table structure for employee, and each employee has multiple e-mail addresses. So, we create an Employee class that has the List<String> field e-mails called list of e-mail addresses. Here, we use the List class for this recipe. To achieve this, we need to create classes and tables; so, first of all, let's meet the basic prerequisites.
+	
+Employee.java
+-------------
+
+@Entity
+@Table(name = "employee")
+public class Employee {
+
+  @Id
+  @GeneratedValue
+  @Column(name = "id")
+  private long id;
+
+  @Column(name = "name")
+  private String name;
+
+  @ElementCollection(fetch=FetchType.LAZY)
+  @CollectionTable(name = "email")
+  private List<String> emails;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public List<String> getEmails() {
+    return emails;
+  }
+
+  public void setEmails(List<String> emails) {
+    this.emails = emails;
+  }
+  @Override
+  public String toString() {
+    return "Employee"
+        + "\n\tId:" + this.id
+        + "\n\tName:" + this.name
+        + "\n\tEmails:" + this.emails;
+  }
+
+}
+
+@CollectionTable: This annotation indicates that the current field is of the Collection type, and hibernate creates a separate table for it. It also creates a reference between them. In this case, hibernate creates a table named email with email and employee_id. The employee_id column is made by joining the persisted class name and the primary key column of the employee class with an underscore (_).
+
+@ElementCollection: This annotation is used to define the relationship with the embedded or basic type.
+
+Here, we also use the fetch=FetchType.LAZY attribute, which means that hibernate will load a child or referenced record on demand only. In our Retrieving a record example, it will execute the employee and e-mail queries separately. Hibernate uses FetchType.LAZY if no attribute is defined for fetch.
+
+Another possible value with the fetch attribute is FetchType.EAGER, which means that hibernate will load all the child records at the time of the retrieval of the parent record. In other words, it eagerly loads all the records. If we use FetchType.EAGER, hibernate uses the following query:
+
+Inserting a record
+-----------------
+The following code is used to insert a record into the database. Here, we will try to insert the record of an employee with three e-mail addresses:
+
+
+		Configuration cfg = new Configuration().configure();
+		SessionFactory sessionFactory = cfg.buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		Employee employee = new Employee();
+		employee.setName("Roger");
+
+		List<String> emails = new ArrayList<String>();
+		emails.add("emailaddress1@provider1.com");
+		emails.add("emailaddress2@provider2.com");
+		emails.add("emailaddress3@provider3.com");
+		employee.setEmails(emails);
+		session.save(employee);
+		t.commit();
+		session.close();
+		
+Retrieving a record
+-------------------
+
+ Employee employee = (Employee) session.get(Employee.class, 1l);
+ System.out.println(employee.toString());
+ 
+ Updating a record
+ -----------------
+Here, we will try to add one more e-mail address to the list of e-mail IDs for Employee#1, which means that we will update the list of e-mails. 
+
+  Employee employee = (Employee) session.get(Employee.class, 1l);
+  List<String> emails = employee.getEmails();
+  emails.add("emailaddress3@provider3.com");
+  session.saveOrUpdate(employee);
+  System.out.println(employee.toString());
+  
+  Deleting a record
+  -----------------
+  
+  Employee employee = new Employee();
+  employee.setId(1);
+  session.delete(employee);
+  
+  
+  
+  Now Mapping Objects with the List:
+  ==================================
+  
+   we dealt with List of the basic data type, which means that we used List of String (List<String>). Now, let's consider that we have a Account class, which contains the degree name and passing year and want to map it with Employee. For this, we deal with List<Object> instead of List<String>. In our case, it will be List<Account>.
+   
+   
+   package com.list.demo;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "account")
+public class Account {
+
+	@Id
+	@GeneratedValue
+	private long id;
+
+	@Column(name = "bankname")
+	private String bankName;
+
+	@Column(name = "passingyear")
+	private int accountNumber;
+
+	public Account() {
+	}
+
+	public Account( String bankName, int accountNumber) {
+		super();
+		this.bankName = bankName;
+		this.accountNumber = accountNumber;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public int getAccountNumber() {
+		return accountNumber;
+	}
+
+	public void setAccountNumber(int accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "Account [id=" + id + ", bankName=" + bankName + ", accountNumber=" + accountNumber + "]";
+	}
+
+}
+
+Here, we used @OneToMany(cascade={CascadeType.ALL}) to map account with employee
+
+
+
+
+Now Main class:
+
+		Configuration cfg = new Configuration().configure();
+		SessionFactory sessionFactory = cfg.buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		Employee employee = new Employee();
+		employee.setName("Pankaj");
+
+		/*List<String> emails = new ArrayList<String>();
+		emails.add("emailaddress1@provider1.com");
+		emails.add("emailaddress2@provider2.com");
+		emails.add("emailaddress3@provider3.com");
+		employee.setEmails(emails);*/
+		
+		List<Account> accounts = new ArrayList<>();
+		Account account = new Account("Kotak Mahindra", 12345678910L);
+		Account account1 = new Account("Bank Of India", 98765432109L);
+		Account account2 = new Account("Oriental Bank of Commerce", 3425161718L);
+		accounts.add(account);
+		accounts.add(account1);
+		accounts.add(account2);
+		employee.setAccounts(accounts);
+		session.save(employee);
+		t.commit();
+		session.close();

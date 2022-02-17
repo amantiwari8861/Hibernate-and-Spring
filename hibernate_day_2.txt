@@ -1,0 +1,212 @@
+1. Transient Object State:
+---------------------------
+An object which is not associated with hibernate session and does not represent a row in the database is considered as transient. It will be garbage collected if no other object refers to it.
+
+
+An object that is created for the first time using the new() operator is in transient state. When the object is in transient sate then it will not contain any identifier (primary key value). You have to use save, persist or saveOrUpdate methods to persist the transient object.
+
+Employee emp = new Employee();
+emp.setName("Ravi Raj");
+// here emp object is in a transient state
+
+Persistent State:
+----------------
+
+1. When the object is in persistent state, then it represent one row of the database, if the
+   object is in persistent state then it is associated with the unique Session
+2. if we want to move an object from persistent to detached state, we need to do either
+   closing that session or need to clear the cache of the session
+3. if we want to move an object from persistent state into transient state then we need to
+   delete that object permanently from the database
+   
+   An object that is associated with the hibernate session is called as Persistent object. When the object is in persistent state, then it represent one row of the database and consists of an identifier value.You can make a transient instance persistent by associating it with a Session.
+   
+ Detached Object State:
+ ---------------------
+ Now, if we close the Hibernate Session, the persistent instance will become a detached instance: it isn't attached to a Session anymore (but can still be modified and reattached to a new Session later though).
+ 
+ 
+	Object which is just removed from hibernate session is called as detached object.The state of the detached object is called as detached state.
+
+	When the object is in detached sate then it contain identity but you can’t do persistence operation with that identity.
+
+	Any changes made to the detached objects are not saved to the database. The detached object can be reattached to the new session and save to the database using update, saveOrUpdate and merge 
+ 
+get() vs load():
+=================
+
+Load() Method:
+-------------
+1) Throws ObjectNotFoundException if object is not found.
+2) load() method doesn't hit the database.
+3) It returns proxy object.
+4) It should be used if you are sure that instance exists.
+
+Get() Method
+-------------
+1) Returns null if object is not found.
+2) get() method always hit the database.
+3) It returns real object not proxy.
+4) It should be used if you are not sure about the existence of INSTANCE.
+ 
+ openSession() vs getCurrentSession():
+ =====================================
+ 
+ If we talk about SessionFactory.openSession()
+------------------------------------------------
+1. It always creates a new Session object.
+2. You need to explicitly flush and close session objects.
+3. In single threaded environment it is slower than getCurrentSession().
+4. You do not need to configure any property to call this method.
+
+And If we talk about SessionFactory.getCurrentSession()
+-------------------------------------------------------
+1. It creates a new Session if not exists, else uses same session which is in current
+   hibernate context.
+2. You do not need to flush and close session objects, it will be automatically taken care by Hibernate internally.
+3. In single threaded environment it is faster than openSession().
+4. You need to configure additional property. "hibernate.current_session_context_class" to call getCurrentSession() method, otherwise it will throw an exception.
+   
+   
+==============================================================================================
+Hibernate Transactions:
+----------------------
+A transaction simply represents a unit of work. Generally speaking, if you wrap your work in a transaction, the behavior of other system users will not affect your data. A transaction can be started, committed to writing data to the database, or rolled back to remove all changes from the beginning onward.
+
+A Transaction is a unit of work in which all the operations must be executed or none of them
+
+ACID Properties
+===============
+
+Atomicity: Is defined as either all operations can be done or all operation can be undone
+
+Consistency: After a transaction is completed successfully, the data in the datastore should be a reliable data. This reliable data is also called as consistent data
+
+Isolation: If two transactions are going on the same data then one transaction will not disturb the other transaction
+
+Durability: After a transaction is completed, the data in the datastore will be permanent until another transaction is going to be performed on that data
+
+
+Hibernate Transaction States:
+----------------------------
+Active State:
+------------
+If a transaction is in execution then it is said to be in active state. It doesn’t matter which step is in execution, until unless the transaction is executing, it remains in active state.
+
+Failed State:
+-------------
+
+If a transaction is executing and a failure occurs, either a hardware failure or a software failure then the transaction goes into failed state from the active state.
+
+Partially Committed State:
+-------------------------
+
+A transaction contains number of read and write operations. Once the whole transaction is successfully executed, the transaction goes into partially committed state where we have all the read and write operations performed on the main memory (local memory) instead of the actual database.
+
+Committed State:
+----------------
+
+Here transaction goes from partially committed state to committed state when everything is successful.
+
+Aborted State:
+--------------
+
+if a transaction fails during execution then the transaction goes into a failed state. The changes made into the local memory (or buffer) are rolled back to the previous consistent state and the transaction goes into aborted state from the failed state.
+
+
+Hibernate Concurrency:
+----------------------------------------------------------------
+
+Problem or Issues with  concurrent data access.
+------------------------------------------------
+
+Lost Updates – one transaction (T1) updates the data and commits successfully where as the second transaction (T2) fails to commit. In this case updates done by transaction (T1) are lost. This can be the situation when concurrent transactions are not isolated.
+
+Dirty Read (Read Uncommitted Data) -  One transaction (T1) reads the uncommitted data (updates are done, but not committed) by another transaction (T2).
+
+Phantom Read-  Transaction (T1) executes same query twice and the result sets is different each time, probably because another transaction (T2) has either added or deleted the records.
+
+Unrepeatable Read- Transaction (T1) reads the same row twice and state of row is different probably because another transaction (T2) updates the row. Special case would be if T1 updates and committed the same data again, then updates done by T2 will be lost.
+
+
+Controlling the Concurrency Issues:
+-----------------------------------
+
+1. Transaction Isolation Levels:
+---------------------------------
+
+ The isolation does not have  0 or 1 state instead there can be different isolation levels. I would like to reiterate that increasing the isolation level will impact the performance.
+ 
+ There are four transaction isolation levels.
+ 
+ Read Uncommitted- One transaction can view uncommitted data of another transaction and dirty read, phantom read, unrepeatable reads are allowed. This is the loosest isolation level and is not recommended. 
+ 
+Read Committed – Dirty Reads (Uncommitted Read) are not allowed in this isolation level, but unrepeatable reads and phantom reads are permitted. This approach uses shared read lock and exclusive write lock in which read lock is acquired and released immediately where as write lock is released at the end of the transaction.
+
+Repeatable Read-  Dirty Read and Unrepeatable Read is not allowed in this isolation level but phantom reads are allowed. In this isolation level, reading transaction will block all other writing transactions ( but allows other reading transactions ) and any writing transaction will block all other transactions. This will have some scalability issues.
+
+Serializable- This is the strictest isolation level and will have  scalability issues. This prevents dirty read, phantom reads , unrepeatable read etc. Transactions are executed serially (one after another) and acquires read and write locks on the entire set of affected data.
+
+How to set a Transaction Isolation level
+========================================
+Every database has default isolation level (either Read Committed or Repeatable Read) and we can override the isolation level using hibernate.connection.isolation property in hibernate.cfg.xml file.
+
+Read uncommitted isolation - 1
+
+Read committed isolation- 2
+
+Repeatable read isolation- 4
+
+Serializable isolation – 8
+
+Enable Versioning in Hibernate:
+===============================
+
+Hibernate has a inbuilt auto versioning of type integer or timestamp at a entity level. To enable versioning , we need to add a property of type int or integer in entity and configuration in mapping of corresponding entity using <version> tag.
+
+Below sample configuration says that there is a property with name version-field in java entity and it is mapped to version column of table.
+
+         <version name="version-field" access="field" column="version"></version>
+
+To use version field as timestamp, define property of data type date and corresponding mapping using <timestamp> tag
+
+        <timestamp name="version-field" access="field" column="timestamp"></timestamp>
+		
+public class Item {
+......
+private int lastUpdated;
+......
+
+}
+
+<class name ="Item" table="ITEM">
+
+<id ../>
+<timestamp name="lastUpdated"
+           access="field"
+		   column="LAST_UPDATED" />
+....
+</class>
+
+
+
+
+
+ LockMode.READ: Acquires a lock automatically when a record is read from the database.
+ 
+ LockMode.UPGRADE: Acquires a database-level lock for the persistent objects that are loaded for update.
+
+ LockMode.WRITE: Acquires a lock automatically when a record is updated or inserted.
+ 
+ 
+ LockMode.NONE—Don’t go to the database unless the object isn’t in any cache.
+ 
+LockMode.READ—Bypass all caches, and perform a version check to verify that the object in memory is the same version that currently exists in the database.
+
+LockMode.UPDGRADE—Bypass all caches, do a version check (if applicable), and obtain a database-level pessimistic upgrade lock, if that is supported. Equivalent to LockModeType.READ in Java Persistence. This mode transparently falls back to LockMode.READ if the database SQL dialect doesn’t support a SELECT ... FOR UPDATE option.
+
+LockMode.UPDGRADE_NOWAIT—The same as UPGRADE, but use a SELECT ... FOR UPDATE NOWAIT, if supported. This disables waiting for concurrent lock releases, thus throwing a locking exception immediately if the lock can’t be obtained. This mode transparently falls back to LockMode.UPGRADE if the database SQL dialect doesn’t support the NOWAIT option.
+
+LockMode.FORCE—Force an increment of the objects version in the database, to indicate that it has been modified by the current transaction. Equivalent to LockModeType.WRITE in Java Persistence.
+
+LockMode.WRITE—Obtained automatically when Hibernate has written to a row in the current transaction. (This is an internal mode; you may not specify it in your application.)

@@ -1,0 +1,130 @@
+Working with the table per concrete class strategy of inheritance
+------------------------------------------------------------------
+
+	This is the easiest strategy among all. In this strategy, hibernate creates a different table for each subclass and parent class. The disadvantage of this approach is that duplicate columns are created in the subclass table.
+	
+	Employee
+	     ---id
+		 ---name
+	   |----- PermanentEmployee
+					---salary
+	   
+	   |-----ContractualEmployee
+					---hourlyRate
+					---contractPeriod
+					
+Employee.java
+--------------
+@Entity
+@Table(name="employee")
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+public class Employee {
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.TABLE)
+  @Column(name="id")
+  private long id;
+  
+  @Column(name="name")
+  private String name;
+  
+  //getters and setters
+}
+
+
+ContractualEmployee.java
+-------------------------
+@Entity
+@AttributeOverrides({
+  @AttributeOverride(name="id", column = @Column(name="id")),
+  @AttributeOverride(name="name", column = @Column(name="name"))
+})
+public class ContractualEmployee extends Employee {
+  
+  @Column(name="hourly_rate")
+  private Double HourlyRate;
+  
+  @Column(name="contract_period")
+  private Float ContractPeriod;
+  
+  //getters and setters
+}
+
+
+PermanentEmployee.java
+------------------------
+
+@Entity
+@AttributeOverrides({
+  @AttributeOverride(name="id", column = @Column(name="id")),
+  @AttributeOverride(name="name", column = @Column(name="name"))
+})
+public class PermanentEmployee extends Employee {
+  
+  @Column(name="salary")
+  private Double salary;
+  
+  //getters and setters
+}
+
+
+Tables:
+-------------
+
+CREATE TABLE `employee` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `contractualemployee` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `contract_period` float DEFAULT NULL,
+  `hourly_rate` double DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+CREATE TABLE `permanentemployee` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `salary` double DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+Annotations used in Employee.java
+-----------------------------------
+Following are the annotations used in Employee.java:
+
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS): This annotation defines the inheritance strategy to be used for an entity class hierarchy. It is used only with the parent or root classes.
+
+
+Annotations used in PermanentEmployee.java and ContractualEmployee.java
+--------------------------------------------------------------------------
+Following are the annotations used in PermanentEmployee.java and ContractualEmployee.java:
+
+Copy
+@AttributeOverrides({
+  @AttributeOverride(name="id", column = @Column(name="id")),
+  @AttributeOverride(name="name", column = @Column(name="name"))
+})
+
+
+@AttributeOverrides: This annotation is used to override the mappings of multiple properties or fields
+
+@AttributeOverride: This annotation is used to override the mappings of basic properties or fields
+
+
+Hibernate creates a column in the table for the attributes that are overridden by the parent class, in which it generally creates redundant data.
+
+Note that this strategy does not support the IDENTITY and AUTO generator strategies; we have to use other generation strategy options or provide a primary key explicitly.
+
+
+How it works…
+-------------
+Hibernate creates a separate table for all the subclasses. We can see here that an overridden attribute is created in each table.
+
+The disadvantage of this strategy is that if we add, delete, or update a field in the root class, it causes major changes in the subtable as well. This is because in this strategy, the parent class is scattered into the other subclasses and the subclasses use the field of the parent class.
+
