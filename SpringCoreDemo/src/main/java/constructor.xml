@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<bean id="employee" class="com.entity.Employee">
+<constructor-arg  name="id" value="102"/>
+<constructor-arg  name="name" value="aman2"/>
+<constructor-arg  name="email" value="abc@gm"/>
+<!-- <constructor-arg  name="address" value="del"/> -->
+
+<constructor-arg  name="age" value="22"/>
+<constructor-arg  name="salary" value="50000"/>
+<constructor-arg  name="phoneNumber" value="666767"/>
+<constructor-arg name="address"  ref="addr"/>
+</bean>
+
+<bean  id="addr" class="com.entity.Address">
+
+<property name="city" value="Delhi"></property>
+</bean>
+
+</beans>

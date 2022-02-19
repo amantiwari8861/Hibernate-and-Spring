@@ -31,5 +31,4 @@ public class EmployeeControllerDemo {
 		transaction.commit();
 		session.close();
 	}
-
 }

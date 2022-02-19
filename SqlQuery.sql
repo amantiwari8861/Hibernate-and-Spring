@@ -1,4 +1,7 @@
+drop database hibernate;
+create database hibernate;
 use hibernate;
+show tables;
 
 -- type 1 table per class hierarchy
 select * from tabperch; 
@@ -7,10 +10,12 @@ drop table tabperch;
 drop table hibernate_sequence;
 
 -- type 2 table per Subclass
+-- 3 different tables with foreignkey
 select * from tabpersubc;
 select * from contractualemployee; 
 select * from permanentemployee; 
-select * from hibernate_sequences;
+select * from hibernate_sequence;
+describe contractualemployee; 
 drop table tabperconc; 
 drop table contractualemployee; 
 drop table permanentemployee; 
@@ -27,3 +32,8 @@ drop table permanentemployee;
 drop table hibernate_sequences;
 
 
+-- 
+select * from collections;
+select * from email;
+select * from emails;
+select * from phonenumber;

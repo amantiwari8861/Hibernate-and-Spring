@@ -2,6 +2,10 @@
 <section name="Workbench">
 	<section name="MavenProjectWizardLocationPage">
 		<list key="location">
+			<item value="F:\Spring\hibernate\programs\CollectionsWithHibernate\src\main\java\entity\CheckCollections.java"/>
+			<item value="F:\Spring\hibernate\programs\TablePerClassHierarchy"/>
+			<item value="F:\Spring\hibernate\programs\MappingWithAnnotation"/>
+			<item value="F:\Spring\hibernate\programs\HibernateFirstDemo"/>
 			<item value="F:\Spring\hibernate\programs\mavendemo2"/>
 			<item value="F:\Spring\hibernate\programs"/>
 			<item value="F:\Spring\hibernate\programs\MavenDemo\pom.xml"/>
@@ -28,12 +32,28 @@
 	</section>
 	<section name="Maven2ProjectWizardArchifactPage">
 		<list key="package">
+			<item value="com.training.spring"/>
+			<item value="entity"/>
+			<item value="s3.s4"/>
+			<item value="s3.s4.Hibernate5DAO"/>
+			<item value="s1.s2"/>
 			<item value="com.training.niit"/>
 		</list>
 		<list key="groupId">
+			<item value="com.training.spring"/>
+			<item value="entity"/>
+			<item value="s3.s4"/>
+			<item value="s1.s2"/>
 			<item value="com.training.niit"/>
 		</list>
 		<list key="artifactId">
+			<item value="SpringCoreDemo"/>
+			<item value="CollectionsWithHibernate"/>
+			<item value="TablePerConcreteClass"/>
+			<item value="TablePerSubclass"/>
+			<item value="TablePerClassHierarchy"/>
+			<item value="Hibernate5DAO"/>
+			<item value="MappingWithAnnotation"/>
 			<item value="Hibernate5Demo"/>
 		</list>
 		<list key="projectNameTemplate">
