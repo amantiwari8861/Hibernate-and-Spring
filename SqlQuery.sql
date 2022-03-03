@@ -37,3 +37,13 @@ select * from collections;
 select * from email;
 select * from emails;
 select * from phonenumber;
+
+
+describe collections;
+
+
+create table employee (id int,name varchar(50),email varchar(50), address varchar(50), age int,salary float, phonenumber long);
+
+select * from employee;
+delete from employee where id=101;
+update employee set name=null where name="ritesh";

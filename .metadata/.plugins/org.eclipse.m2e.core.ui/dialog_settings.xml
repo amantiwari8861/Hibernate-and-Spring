@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectWizardLocationPage">
 		<list key="location">
+			<item value="F:\Spring\hibernate\programs\SpringCoreDemo\src\main\java\com\training\spring\controller\EmployeeController.java"/>
 			<item value="F:\Spring\hibernate\programs\CollectionsWithHibernate\src\main\java\entity\CheckCollections.java"/>
 			<item value="F:\Spring\hibernate\programs\TablePerClassHierarchy"/>
 			<item value="F:\Spring\hibernate\programs\MappingWithAnnotation"/>
@@ -32,6 +33,7 @@
 	</section>
 	<section name="Maven2ProjectWizardArchifactPage">
 		<list key="package">
+			<item value="com.training.spring.jdbc"/>
 			<item value="com.training.spring"/>
 			<item value="entity"/>
 			<item value="s3.s4"/>
@@ -40,6 +42,7 @@
 			<item value="com.training.niit"/>
 		</list>
 		<list key="groupId">
+			<item value="com.training.spring.jdbc"/>
 			<item value="com.training.spring"/>
 			<item value="entity"/>
 			<item value="s3.s4"/>
@@ -47,6 +50,7 @@
 			<item value="com.training.niit"/>
 		</list>
 		<list key="artifactId">
+			<item value="SpringJDBC"/>
 			<item value="SpringCoreDemo"/>
 			<item value="CollectionsWithHibernate"/>
 			<item value="TablePerConcreteClass"/>

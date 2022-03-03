@@ -1,0 +1,640 @@
+log4j2.properties
+-----------------
+status = error
+name = PropertiesConfig
+ 
+#Make sure to change log file path as per your need
+property.filename = C:\\logs\\debug.log
+ 
+filters = threshold
+ 
+filter.threshold.type = ThresholdFilter
+filter.threshold.level = debug
+ 
+appenders = rolling
+ 
+appender.rolling.type = RollingFile
+appender.rolling.name = RollingFile
+appender.rolling.fileName = ${filename}
+appender.rolling.filePattern = debug-backup-%d{MM-dd-yy-HH-mm-ss}-%i.log.gz
+appender.rolling.layout.type = PatternLayout
+appender.rolling.layout.pattern = %d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+appender.rolling.policies.type = Policies
+appender.rolling.policies.time.type = TimeBasedTriggeringPolicy
+appender.rolling.policies.time.interval = 1
+appender.rolling.policies.time.modulate = true
+appender.rolling.policies.size.type = SizeBasedTriggeringPolicy
+appender.rolling.policies.size.size=10MB
+appender.rolling.strategy.type = DefaultRolloverStrategy
+appender.rolling.strategy.max = 20
+ 
+loggers = rolling
+ 
+#Make sure to change the package structure as per your application
+ 
+logger.rolling.name = com.fisglobal.training
+logger.rolling.level = debug
+logger.rolling.additivity = false
+logger.rolling.appenderRef.rolling.ref = RollingFile
+-----------------------
+<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.14.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.14.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-web</artifactId>
+			<version>2.14.1</version>
+		</dependency>
+		
+-----------------------------------------------------
+
+Inversion of Control:
+=====================
+
+1. Spring helps in the creation of loosely coupled applications because of Dependency Injection.
+  
+2. In Spring, objects define their associations (dependencies) and do not worry about how  they will get those dependencies. It is the responsibility of Spring to provide the required dependencies for creating objects.
+   
+    For example: Suppose we have an object Employee and it has a dependency on object Address. We would define a bean corresponding to Employee that will define its dependency on object Address.
+
+	When Spring tries to create an Employee object, it will see that Employee has a dependency on Address, so it will first create the Address object (dependent object) and then inject it into the Employee object.
+	
+	class Employee//2 {
+	private Address address;//1
+	}
+	
+3. Inversion of Control (IOC) and Dependency Injection (DI) are used interchangeably. IOC is achieved through DI. DI is the process of providing the dependencies and IOC is the end result of DI. (Note: DI is not the only way to achieve IOC.)
+   
+   Inversion of Control can be achieved through various mechanisms such as: Strategy design pattern, Service Locator pattern, Factory pattern, and Dependency Injection (DI).
+   
+4. By DI, the responsibility of creating objects is shifted from our application code to the Spring container; this phenomenon is called IOC.
+   
+5. Dependency Injection can be done by setter injection or constructor injection.
+
+1. By setter methods
+2. Constructors
+
+
+Dependency Injection Using Constructors:
+==========================================
+
+public class Employee {
+
+	private String name;
+	private Address address;
+
+	public Employee() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	public Employee(String name, Address address) {
+		super();
+		this.name = name;
+		this.address = address;
+	}
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public Address getAddress() {
+		return address;
+	}
+
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+
+	public void display()
+	{
+		System.out.println(name);
+		address.display();
+	}
+}
+
+Address.java
+============
+public class Address {
+
+	private String hounseNumber;
+	private String street;
+	private String city;
+	private String state;
+	public Address(String hounseNumber, String street, String city, String state) {
+		super();
+		this.hounseNumber = hounseNumber;
+		this.street = street;
+		this.city = city;
+		this.state = state;
+	}
+	
+	public void display()
+	{
+		System.out.println(hounseNumber+ " : "+street+" : "+city+" : "+state);
+	}
+	
+}
+
+
+beans.xml
+===========
+
+<bean id="address" class="com.spring.model.Address">
+	<constructor-arg index="0" value="B-121" type="String" />
+	<constructor-arg index="1" value="Gali No 6" type="String" />
+	<constructor-arg index="2" value="New delhi" type="String" />
+	<constructor-arg index="3" value="Delhi" type="String" />
+	</bean>
+	<bean id="employee" class="com.spring.model.Employee">
+	<constructor-arg index="0" value="Pankaj Saini" type="String" />
+	<constructor-arg index="1" ref="address"></constructor-arg>
+	</bean>
+	
+	
+main class:
+============
+
+		ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+		Employee employee = (Employee)context.getBean("employee");
+		employee.display();
+		employee.getAddress().display();
+		
+		
+
+Dependency Injection Using setters:
+====================================
+
+<bean id="address" class="com.spring.model.Address">
+	<property name="hounseNumber" value="E-411" />
+	<property name="street" value="Gali Number 5" />
+	<property name="city" value="East Vinod Nagar" />
+	<property name="state" value="New Delhi" />
+	</bean>
+	
+	<bean id="employee" class="com.spring.model.Employee">
+	<property name="name" value="Pankaj Saini" />
+	<property name="address" ref="address"></property>
+	
+	
+Autowiring Dependencies:
+========================
+
+Autowiring feature of spring framework enables you to inject the object dependency implicitly. It internally uses setter or constructor injection.
+
+Autowiring can't be used to inject primitive and string values. It works with reference only.
+
+1. no ->(The Default value)	It is the default autowiring mode. It means no autowiring by default.
+
+
+2. byName==>	The byName mode injects the object dependency according to name of the bean. In such case, property name and bean name must be same. It internally calls setter method.
+
+3. byType==>	The byType mode injects the object dependency according to type. So property name and bean name can be different. It internally calls setter method.
+
+4. constructor==>	The constructor mode injects the dependency by calling the constructor of the class. It calls the constructor having large number of parameters.
+
+
+Spring MVC:
+==========
+
+A Spring MVC is a Java framework which is used to build web applications. It follows the Model-View-Controller design pattern. It implements all the basic features of a core spring framework like Inversion of Control, Dependency Injection.
+
+A Spring MVC provides an elegant solution to use MVC in spring framework by the help of DispatcherServlet. Here, DispatcherServlet is a class that receives the incoming request and maps it to the right resource such as controllers, models, and views.
+
+Spring MVC Application Flow:
+============================
+
+Step 1: First request will be received by DispatcherServlet
+
+Step 2: DispatcherServlet will take the help of HandlerMapping and get to know the Controller class name associated with the given request
+
+Step 3: So request transfer to the Controller, and then controller will process the request by executing appropriate methods and returns ModeAndView object (contains Model data and View name) back to the DispatcherServlet
+
+Step 4: Now DispatcherServlet send the model object to the ViewResolver to get the actual view page
+
+Step 5: Finally DispatcherServlet will pass the Model object to the View page to display the result
+
+
+
+Spring View Resolvers:
+=====================
+
+1. AbstractCachingViewResolver : Abstract view resolver that caches views. Often views need preparation before they can be used; extending this view resolver provides caching.
+
+2. XmlViewResolver : Implementation of ViewResolver that accepts a configuration file written in XML with the same DTD as Spring’s XML bean factories. The default configuration file is /WEB-INF/views.xml.
+
+3. ResourceBundleViewResolver : Implementation of ViewResolver that uses bean definitions in a ResourceBundle, specified by the bundle base name. Typically you define the bundle in a properties file, located in the classpath. The default file name is views.properties.
+
+4. UrlBasedViewResolver : Simple implementation of the ViewResolver interface that effects the direct resolution of logical view names to URLs, without an explicit mapping definition. This is appropriate if your logical names match the names of your view resources in a straightforward manner, without the need for arbitrary mappings.
+
+5. InternalResourceViewResolver :  Convenient subclass of UrlBasedViewResolver that supports InternalResourceView (in effect, Servlets and JSPs) and subclasses such as JstlView and TilesView. You can specify the view class for all views generated by this resolver by using setViewClass(..).
+
+6. VelocityViewResolver/FreeMarkerViewResolver : Convenient subclass of UrlBasedViewResolver that supports VelocityView (in effect, Velocity templates) or FreeMarkerView ,respectively, and custom subclasses of them.
+
+7. ContentNegotiatingViewResolver : Implementation of the ViewResolver interface that resolves a view based on the request file name or Accept header.
+
+
+Spring Web Application Without Maven:
+=====================================
+web.xml
+========
+
+<servlet>
+ <servlet-name>dispatcher</servlet-name>
+ <servlet-class>
+  org.springframework.web.servlet.DispatcherServlet
+ </servlet-class>
+ </servlet>
+ <servlet-mapping>
+   <servlet-name>dispatcher</servlet-name>
+   <url-pattern>/</url-pattern>
+ </servlet-mapping>
+ <context-param>
+ <param-name>contextConfigLocation</param-name>
+ <param-value>/WEB-INF/dispatcher-servlet.xml</param-value>
+ </context-param>
+</web-app>
+
+
+dispatcher-servlet.xml:
+======================
+
+<context:component-scan base-package="com.spring.mvc" />
+<mvc:annotation-driven />
+     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+       <property name="prefix">
+        <value>/WEB-INF/jsp/</value>
+       </property>
+       <property name="suffix">
+       <value>.jsp</value>
+       </property>
+     </bean>
+
+---------------------------------------------
+Java Configuration:
+
+WebAppInitializer.java:
+
+public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+	@Override
+	protected Class<?>[] getRootConfigClasses() {
+		
+		return new Class[] {MyDispatcher.class};
+	}
+
+	@Override
+	protected Class<?>[] getServletConfigClasses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String[] getServletMappings() {
+	
+		return new String[] {"/"};
+	}
+
+}
+
+
+MyDispatcher.java:
+-----------------
+
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages ={"com.niit.shopping"})
+public class MyDispatcher {
+
+	@Bean
+	public ViewResolver viewResolver(){
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+		viewResolver.setPrefix("/WEB-INF/jsp/");
+		viewResolver.setSuffix(".jsp");
+		return viewResolver;
+	}
+}
+
+
+@Controller :  annotation marks this class as spring bean which may handle different HTTP requests based on mapping specified on class or individual controller methods.
+
+@RequestMapping:  annotation is used for mapping web requests onto specific handler classes and/or handler methods.
+
+ModelMap/Model : is a Map implementation, which saves you from old request.getAttribute/ request.setAttribute. It provides a way to set/get attributes from/to request or session.
+
+<mvc:annotation-driven /> says that we can define spring beans dependencies without actually having to specify a bunch of beans in xml or implement an interface or extend a base class or anything
+	
+For example, just by annotating a class with @Controller (as we did above) , spring will know that the specified class contains methods that will handle HTTP requests, no need to define that as a bean in xml.
+	 
+<context:component-scan base-package="" />
+
+tells spring to search project classpath for all classes under the package specified with base-package and look at each class to see if it is annotated with specific Spring annotations [@Controller, @Service, @Repository, @Component, etc..] and if it does then Spring will register the class with the bean factory as if you had typed in the xml configuration files.
+	  
+DispatcherServlet:  is the front controller which receives each request and direct the request to appropriate controller.It is also responsible for directing the response from controller to appropriate views.
+
+
+
+Maven:
+==============================
+
+Maven is a powerful project management tool that is based on POM (project object model). It is used for projects build, dependency and documentation. It simplifies the build process like ANT. But it is too much advanced than ANT.
+
+In short terms we can tell maven is a tool that can be used for building and managing any Java-based project. maven make the day-to-day work of Java developers easier and generally help with the comprehension of any Java-based project.
+
+Maven does a lot of helpful task like
+--------------------------------------
+
+1. We can easily build a project using maven.
+2. We can add jars and other dependencies of the project easily using the help of maven.
+3. Maven provides project information (log document, dependency list, unit test reports etc.)
+4. Maven is very helpful for a project while updating central repository of JARs and other dependencies.
+5. With the help of Maven we can build any number of projects into output types like the JAR, WAR etc without doing any scripting.
+6. Using maven we can easily integrate our project with source control system (such as Subversion or Git).
+
+
+How maven Works:
+==================
+
+1. maven Reads the pom.xml file
+2. Then downloads the dependencies defined in pom.xml into local repository from central or Remote Repository
+3. Execute life Cycles, phases, goals,plug-ins etc ,defines in specifies build path
+
+
+1. POM Files: Project Object Model(POM) Files are XML file that contains information related to the project and configuration information such as dependencies, source directory, plugin, goals etc. used by Maven to build the project. When you should execute a maven command you give maven a POM file to execute the commands. Maven reads pom.xml file to accomplish its configuration and operations.
+
+2. Dependencies and Repositories: Dependencies are external Java libraries required for Project and repositories are directories of packaged JAR files. The local repository is just a directory on your machine hard drive. If the dependencies are not found in the local Maven repository, Maven downloads them from a central Maven repository and puts them in your local repository.
+
+3. Build Life Cycles, Phases and Goals: A build life cycle consists of a sequence of build phases, and each build phase consists of a sequence of goals. Maven command is the name of a build lifecycle, phase or goal. If a lifecycle is requested executed by giving maven command, all build phases in that life cycle are executed also. If a build phase is requested executed, all build phases before it in the defined sequence are executed too.
+
+
+4. Build Profiles: Build profiles a set of configuration values which allows you to build your project using different configurations. For example, you may need to build your project for your local computer, for development and test. To enable different builds you can add different build profiles to your POM files using its profiles elements and are triggered in the variety of ways.
+
+5. Build Plugins: Build plugins are used to perform specific goal. you can add a plugin to the POM file. Maven has some standard plugins you can use, and you can also implement your own in Java.
+
+Installation Process:
+=======================
+
+
+1. Verify that your system has java installed or not. if not then install java 
+
+2. Check java Environmental variable is set or not. if not then set java environmental variable
+3. Download maven
+4. Unpack your maven zip at any place in your system.
+5. Add the bin directory of the created directory apache-maven-3.5.3( to the PATH environment variable and system variable.
+5. open cmd and run mvn -v command. If it print following lines of code then Then installation completed.
+
+Maven pom.xml:
+=============
+
+POM means Project Object Model is key to operate Maven. Maven reads pom.xml file to accomplish its configuration and operations. It is an XML file that contains information related to the project and configuration information such as dependencies, source directory, plugin, goals etc. used by Maven to build the project.
+
+Elements used for Creating pom.xml file
+-------------------------------------------
+
+project- It is the root elment of the pom.xml file.
+
+modelVersion- modelversion means what version of the POM model you are using. Use version 4.0.0 for maven 2 and maven 3.
+
+groupId- groupId means the id for the project group. It is unique and Most often you will use a group ID which is similar to the root Java package name of the project like we used the groupId com.project.loggerapi.
+
+artifactId- artifactId used to give name of the project you are building.in our example name of our project is LoggerApi.
+
+version- version element contains the version number of the project. If your project has been released in different versions then it is useful to give version of your project.
+
+Other Elements of Pom.xml file
+----------------------------------
+
+dependencies- dependencies element is used to defines a list of dependency of project.
+
+dependency- dependency defines a dependency and used inside dependencies tag. Each dependency is described by its groupId, artifactId and version.
+
+name- this element is used to give name to our maven project.
+
+scope- this element used to define scope for this maven project that can be compile, runtime, test, provided system etc.
+
+packaging- packaging element is used to packaging our project to output types like JAR, WAR etc.
+
+
+Local repository- A local repository is a directory on the machine of developer. This repository contains all the dependencies Maven downloads. Maven only needs to download the dependencies once, even if multiple projects depends on them (e.g. ODBC).
+By default, maven local repository is user_home/m2 directory.
+example – C:\Users\asingh\.m2
+
+Central repository- The central Maven repository is created Maven community. Maven looks in this central repository for any dependencies needed but not found in your local repository. Maven then downloads these dependencies into your local repository. You can view central repository by this link.
+
+Remote repository- remote repository is a repository on a web server from which Maven can download dependencies.it often used for hosting projects internal to organization. Maven then downloads these dependencies into your local repository.
+
+
+
+Maven comes with 3 built-in build life cycles as shown below :
+-----------------------------------------------------------------
+
+Clean - this phase involves cleaning of the project (for a fresh build & deployment)
+Default - this phase handles the complete deployment of the project
+Site - this phase handles the generating the java documentation of the project.
+
+
+maven Build Phases:
+--------------------
+validate - validate the project is correct and all necessary information is available
+compile - compile the source code of the project
+test - test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+package - take the compiled code and package it in its distributable format, such as a JAR.
+integration-test - process and deploy the package if necessary into an environment where integration tests can be run
+verify - run any checks to verify the package is valid and meets quality criteria
+install - install the package into the local repository, for use as a dependency in other projects locally
+deploy - done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects.
+
+
+To create a Maven project using console:
+
+mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+
+then Go to the Project Folder and run --> mvn package to run the Application
+
+
+Spring Form:
+=============
+
+
+<%@ include file="header.jsp" %>
+<html>
+<head>
+	<title>Product Page</title>
+</head>
+<body>
+<h1>
+	Add A Product
+</h1>
+
+
+
+<c:url var="addAction" value="/add/product" ></c:url>
+
+<form:form action="${addAction}" modelAttribute="product">
+<table>
+	<c:if test="${!empty product.name}">
+	<tr>
+		<td>
+			<form:label path="productId">
+				<spring:message text="productId"/>
+			</form:label>
+		</td>
+		<td>
+			<form:input path="productId" readonly="true" size="8"  disabled="true" />
+			<form:hidden path="productId" />
+		</td> 
+	</tr>
+	</c:if>
+	<tr>
+		<td>
+			<form:label path="name">
+				<spring:message text="Name"/>
+			</form:label>
+		</td>
+		<td>
+			<form:input path="name" />
+		</td> 
+	</tr>
+	<tr>
+		<td>
+			<form:label path="description">
+				<spring:message text="Product Description"/>
+			</form:label>
+		</td>
+		<td>
+			<form:input path="description" />
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<form:label path="price">
+				<spring:message text="Product Price"/>
+			</form:label>
+		</td>
+		<td>
+			<form:input path="price" />
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<form:label path="quantity">
+				<spring:message text="Quantity"/>
+			</form:label>
+		</td>
+		<td>
+			<form:input path="quantity" />
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<form:label path="stock">
+				<spring:message text="Product Stock"/>
+			</form:label>
+		</td>
+		<td>
+			<form:input path="stock" />
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<c:if test="${!empty product.name}">
+				<input type="submit"
+					value="<spring:message text="Update Product"/>" />
+			</c:if>
+			<c:if test="${empty product.name}">
+				<input type="submit"
+					value="<spring:message text="Add Product"/>" />
+			</c:if>
+		</td>
+	</tr>
+</table>	
+</form:form>
+<br>
+ <h3>Product List</h3>
+<c:if test="${!empty products}">
+	<table class="tg">
+	<tr>
+		<th width="80"> ID</th>
+		<th width="120"> Name</th>
+		<th width="120">Description</th>
+		<th width="120">Price</th>
+		<th width="120">Quantity</th>
+		<th width="120">Stock</th>
+		<th width="60">Edit</th>
+		<th width="60">Delete</th>
+	</tr>
+	<c:forEach items="${products}" var="product">
+		<tr>
+			<td>${product.productId}</td>
+			<td>${product.name}</td>
+			<td>${product.description}</td>
+			<td>${product.price}</td>
+			<td>${product.quantity}</td>
+			<td>${product.stock}</td>
+			<td><a href="<c:url value='/update/${product.productId}' />" >Update</a></td>
+			<td><a href="<c:url value='/remove/${product.productId}' />" >Delete</a></td>
+		</tr>
+	</c:forEach>
+	</table>
+</c:if>
+</body>
+</html> 
+
+
+
+Controller: Mappings:
+======================
+
+@GetMapping(value="/products")
+	public String productPage(Model model)
+	{
+		List<Product> list = productDAO.getAllProducts();
+		model.addAttribute("products", list);
+		model.addAttribute("product", new Product());
+		return "products";
+	}
+	
+	@PostMapping(value="/add/product")
+	public String addProduct(@ModelAttribute("product") Product product)
+	{
+		productDAO.saveOrUpdateProduct(product);
+		return "redirect:/products";
+	}
+	
+	@GetMapping(value="/remove/{productId}")
+	public String deleteProduct(@PathVariable("productId") int productId)
+	{
+		Product p = productDAO.getProductById(productId);
+		productDAO.deleteProduct(p);
+		return "redirect:/products";
+	}
+
+	@GetMapping(value="/update/{productId}")
+	public String updateProduct(@PathVariable("productId") int productId,Model model)
+	{
+		Product pr = productDAO.getProductById(productId);
+		model.addAttribute("product", pr);
+		List<Product> list = productDAO.getAllProducts();
+		model.addAttribute("products", list);
+		return "products";
+	}
+
+
+
+
+
+

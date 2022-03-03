@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="employee" class="com.training.spring.jdbc.Employee">
+	
+	<property name="id" value="101"/>
+	<property name="name" value="ritesh"/>
+	<property name="email" value="aman@1234"/>
+	<property name="address" value="delhi"/>
+	<property name="age" value="22"/>
+	<property name="salary" value="10000"/>
+	<property name="phoneNumber" value="9891062743"/>
+	</bean>
+
+	<bean id="ds" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/hibernate" />
+		<property name="username" value="root" />
+		<property name="password" value="1234" />
+	</bean>
+	<bean id="jdbcTemplate"
+		class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="ds"></property>
+	</bean>
+	<bean id="employeeDAOImpl" class="com.training.spring.jdbc.JDBCcontroller">
+		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
+	</bean>
+</beans>
